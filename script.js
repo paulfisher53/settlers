@@ -849,21 +849,6 @@ function installEvents() {
 
   helpBtn.addEventListener("click", openHelpModal);
   helpCloseBtn.addEventListener("click", closeHelpModal);
-
-  helpModal.addEventListener("click", (event) => {
-    if (Date.now() < helpModalIgnoreBackdropClicksUntil) {
-      return;
-    }
-    if (event.target === helpModal) {
-      closeHelpModal();
-    }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !helpModal.hidden) {
-      closeHelpModal();
-    }
-  });
 }
 
 function init() {
