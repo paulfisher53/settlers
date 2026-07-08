@@ -47,6 +47,7 @@ const randomWIncreaseBtn = document.getElementById("random-w-increase");
 const randomHValueEl = document.getElementById("random-h-value");
 const randomWValueEl = document.getElementById("random-w-value");
 let helpModalTrigger = null;
+let helpModalIgnoreBackdropClicksUntil = 0;
 
 //const finalScoreEl = document.getElementById("final-score");
 const potentialScoreEl = document.getElementById("potential-score");
@@ -801,6 +802,7 @@ function openHelpModal() {
     return;
   }
   helpModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : helpBtn;
+  helpModalIgnoreBackdropClicksUntil = Date.now() + 400;
   helpModal.hidden = false;
   helpBtn.setAttribute("aria-expanded", "true");
   document.body.classList.add("help-modal-open");
@@ -846,11 +848,12 @@ function installEvents() {
   });
 
   helpBtn.addEventListener("click", openHelpModal);
-  helpBtn.addEventListener("pointerup", openHelpModal);
   helpCloseBtn.addEventListener("click", closeHelpModal);
-  helpCloseBtn.addEventListener("pointerup", closeHelpModal);
 
   helpModal.addEventListener("click", (event) => {
+    if (Date.now() < helpModalIgnoreBackdropClicksUntil) {
+      return;
+    }
     if (event.target === helpModal) {
       closeHelpModal();
     }
