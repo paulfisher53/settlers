@@ -46,6 +46,7 @@ const randomWDecreaseBtn = document.getElementById("random-w-decrease");
 const randomWIncreaseBtn = document.getElementById("random-w-increase");
 const randomHValueEl = document.getElementById("random-h-value");
 const randomWValueEl = document.getElementById("random-w-value");
+let helpModalTrigger = null;
 
 //const finalScoreEl = document.getElementById("final-score");
 const potentialScoreEl = document.getElementById("potential-score");
@@ -796,15 +797,29 @@ function clearPlacements() {
 }
 
 function openHelpModal() {
+  if (!helpModal.hidden) {
+    return;
+  }
+  helpModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : helpBtn;
   helpModal.hidden = false;
   helpBtn.setAttribute("aria-expanded", "true");
-  helpCloseBtn.focus();
+  document.body.classList.add("help-modal-open");
+  window.requestAnimationFrame(() => {
+    helpCloseBtn.focus();
+  });
 }
 
 function closeHelpModal() {
+  if (helpModal.hidden) {
+    return;
+  }
   helpModal.hidden = true;
   helpBtn.setAttribute("aria-expanded", "false");
-  helpBtn.focus();
+  document.body.classList.remove("help-modal-open");
+  window.requestAnimationFrame(() => {
+    (helpModalTrigger || helpBtn).focus();
+    helpModalTrigger = null;
+  });
 }
 
 function installEvents() {
@@ -831,7 +846,9 @@ function installEvents() {
   });
 
   helpBtn.addEventListener("click", openHelpModal);
+  helpBtn.addEventListener("pointerup", openHelpModal);
   helpCloseBtn.addEventListener("click", closeHelpModal);
+  helpCloseBtn.addEventListener("pointerup", closeHelpModal);
 
   helpModal.addEventListener("click", (event) => {
     if (event.target === helpModal) {

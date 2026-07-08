@@ -146,6 +146,7 @@ button {
   color: #fff;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.2s ease;
+  touch-action: manipulation;
 }
 
 button:hover {
@@ -354,6 +355,8 @@ button:disabled:hover {
   place-items: center;
   background: rgba(16, 34, 38, 0.52);
   padding: 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .help-modal[hidden] {
@@ -379,6 +382,12 @@ button:disabled:hover {
   font-family: "Fraunces", serif;
   font-size: 1.55rem;
   color: #163846;
+}
+
+@supports (height: 1dvh) {
+  .help-modal-card {
+    max-height: min(84dvh, 780px);
+  }
 }
 
 .help-section {
@@ -518,6 +527,7 @@ button:disabled:hover {
 
   .help-modal {
     padding: 12px;
+    place-items: start center;
   }
 
   .help-modal-card {
@@ -530,4 +540,16 @@ button:disabled:hover {
     margin-right: 34px;
     font-size: 1.3rem;
   }
+}
+
+@supports (height: 1dvh) {
+  @media (max-width: 860px) {
+    .help-modal-card {
+      max-height: 88dvh;
+    }
+  }
+}
+
+body.help-modal-open {
+  overflow: hidden;
 }
