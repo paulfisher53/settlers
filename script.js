@@ -46,8 +46,6 @@ const randomWDecreaseBtn = document.getElementById("random-w-decrease");
 const randomWIncreaseBtn = document.getElementById("random-w-increase");
 const randomHValueEl = document.getElementById("random-h-value");
 const randomWValueEl = document.getElementById("random-w-value");
-let helpModalTrigger = null;
-let helpModalIgnoreBackdropClicksUntil = 0;
 
 //const finalScoreEl = document.getElementById("final-score");
 const potentialScoreEl = document.getElementById("potential-score");
@@ -801,14 +799,9 @@ function openHelpModal() {
   if (!helpModal.hidden) {
     return;
   }
-  helpModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : helpBtn;
-  helpModalIgnoreBackdropClicksUntil = Date.now() + 400;
   helpModal.hidden = false;
   helpBtn.setAttribute("aria-expanded", "true");
   document.body.classList.add("help-modal-open");
-  window.requestAnimationFrame(() => {
-    helpCloseBtn.focus();
-  });
 }
 
 function closeHelpModal() {
@@ -818,10 +811,6 @@ function closeHelpModal() {
   helpModal.hidden = true;
   helpBtn.setAttribute("aria-expanded", "false");
   document.body.classList.remove("help-modal-open");
-  window.requestAnimationFrame(() => {
-    (helpModalTrigger || helpBtn).focus();
-    helpModalTrigger = null;
-  });
 }
 
 function installEvents() {
