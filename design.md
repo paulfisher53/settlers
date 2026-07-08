@@ -9,7 +9,7 @@ The goal is to place an optimal configuration of resources to satisfy all City d
 
 ## 🧩 Grid Elements
 
-### Board Entities
+### Board  Entities
 *   **Cities (🏙️¹, 🏙️², 🏙️³):** Core constraint hubs. The number represents exactly how many resources must be placed adjacent to it (including diagonals).
 *   **Mountains (⛰️):** Unbuildable terrain obstacles that block resource placement and restrict layout options.
 *   **Ports (⚓🪵, ⚓🧱, ⚓🌾, ⚓🐑):** Edge tiles that restrict adjacent placement to a matching resource but reward huge point bonuses.
