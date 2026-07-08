@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <main class="app">
+
+    <h1 class="app-title">Settlers</h1>
+
+    <section class="layout">
+      <section class="panel board-wrap" aria-label="Game board">
+
+      <div class="score-line">
+        <span>Score</span>
+        <strong id="potential-score">0</strong>
+      </div>
+      <br/>
+        <div id="board" class="board"></div>
+        <br /><br />
+        <div class="control-row resource-picker" id="resource-picker"></div>
+
+      </section>
+    </section>
+
+    <section class="panel controls" aria-label="Game controls">
+      <div class="control-row">
+        <label for="random-h-input">H</label>
+        <input id="random-h-input" class="size-input" type="number" min="4" max="10" step="1" value="5" />
+        <label for="random-w-input">W</label>
+        <input id="random-w-input" class="size-input" type="number" min="4" max="10" step="1" value="5" />
+
+        <button id="clear-btn" type="button">Clear</button>
+        <button id="reroll-btn" type="button">🎲</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
