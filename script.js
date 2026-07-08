@@ -37,6 +37,9 @@ const boardEl = document.getElementById("board");
 const resourcePicker = document.getElementById("resource-picker");
 const clearBtn = document.getElementById("clear-btn");
 const rerollBtn = document.getElementById("reroll-btn");
+const helpBtn = document.getElementById("help-btn");
+const helpModal = document.getElementById("help-modal");
+const helpCloseBtn = document.getElementById("help-close-btn");
 const randomHDecreaseBtn = document.getElementById("random-h-decrease");
 const randomHIncreaseBtn = document.getElementById("random-h-increase");
 const randomWDecreaseBtn = document.getElementById("random-w-decrease");
@@ -792,6 +795,18 @@ function clearPlacements() {
   resetTimer();
 }
 
+function openHelpModal() {
+  helpModal.hidden = false;
+  helpBtn.setAttribute("aria-expanded", "true");
+  helpCloseBtn.focus();
+}
+
+function closeHelpModal() {
+  helpModal.hidden = true;
+  helpBtn.setAttribute("aria-expanded", "false");
+  helpBtn.focus();
+}
+
 function installEvents() {
 
   randomHDecreaseBtn.addEventListener("click", () => updateRandomSize("rows", -1));
@@ -813,6 +828,21 @@ function installEvents() {
     clearPlacements();
     renderBoard();
     renderScorePanel();
+  });
+
+  helpBtn.addEventListener("click", openHelpModal);
+  helpCloseBtn.addEventListener("click", closeHelpModal);
+
+  helpModal.addEventListener("click", (event) => {
+    if (event.target === helpModal) {
+      closeHelpModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !helpModal.hidden) {
+      closeHelpModal();
+    }
   });
 }
 

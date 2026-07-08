@@ -142,7 +142,7 @@ button {
   border: 0;
   border-radius: 10px;
   padding: 8px 12px;
-  background: #113f4d;
+  background: #11214d;
   color: #fff;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.2s ease;
@@ -346,6 +346,73 @@ button:disabled:hover {
   margin-left: 14px;
 }
 
+.help-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  background: rgba(16, 34, 38, 0.52);
+  padding: 20px;
+}
+
+.help-modal[hidden] {
+  display: none;
+}
+
+.help-modal-card {
+  width: min(680px, 100%);
+  max-height: min(84vh, 780px);
+  overflow: auto;
+  text-align: left;
+  background: #fff;
+  color: #1b2b31;
+  border-radius: 16px;
+  border: 1px solid #bfd0d6;
+  box-shadow: 0 20px 44px rgba(13, 35, 44, 0.34);
+  padding: 18px 18px 16px;
+  position: relative;
+}
+
+.help-modal-card h2 {
+  margin: 0 42px 10px 0;
+  font-family: "Fraunces", serif;
+  font-size: 1.55rem;
+  color: #163846;
+}
+
+.help-section {
+  margin-top: 10px;
+}
+
+.help-section h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.help-section p,
+.help-section li {
+  font-size: 0.97rem;
+  line-height: 1.45;
+}
+
+.help-section ol,
+.help-section ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.help-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 6px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
 .confetti-layer {
   position: fixed;
   inset: 0;
@@ -447,5 +514,20 @@ button:disabled:hover {
     min-width: 38px;
     min-height: 38px;
     padding: 6px 10px;
+  }
+
+  .help-modal {
+    padding: 12px;
+  }
+
+  .help-modal-card {
+    max-height: 88vh;
+    padding: 14px 14px 12px;
+    border-radius: 14px;
+  }
+
+  .help-modal-card h2 {
+    margin-right: 34px;
+    font-size: 1.3rem;
   }
 }
