@@ -21,6 +21,8 @@
       <div class="score-line">
         <span>Score</span>
         <strong id="potential-score">0</strong>
+        <span class="timer-label">Time</span>
+        <strong id="timer">00:00</strong>
       </div>
       <br/>
         <div id="board" class="board"></div>
@@ -32,11 +34,21 @@
 
     <section class="panel controls" aria-label="Game controls">
       <div class="control-row">
-        <label for="random-h-input">H</label>
-        <input id="random-h-input" class="size-input" type="number" min="4" max="10" step="1" value="5" />
-        <label for="random-w-input">W</label>
-        <input id="random-w-input" class="size-input" type="number" min="4" max="10" step="1" value="5" />
-
+        <span class="axis-label">H</span>
+        <div class="size-stepper">
+          <button id="random-h-decrease" class="stepper-btn" type="button" aria-label="Decrease board height">-</button>
+          <output id="random-h-value" class="size-value" aria-live="polite">5</output>
+          <button id="random-h-increase" class="stepper-btn" type="button" aria-label="Increase board height">+</button>
+        </div>
+        <span class="axis-label">W</span>
+        <div class="size-stepper">
+          <button id="random-w-decrease" class="stepper-btn" type="button" aria-label="Decrease board width">-</button>
+          <output id="random-w-value" class="size-value" aria-live="polite">5</output>
+          <button id="random-w-increase" class="stepper-btn" type="button" aria-label="Increase board width">+</button>
+        </div>
+      </div>
+      <br />
+      <div class="control-row">
         <button id="clear-btn" type="button">Clear</button>
         <button id="reroll-btn" type="button">🎲</button>
       </div>

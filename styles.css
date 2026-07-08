@@ -61,6 +61,30 @@ body {
   background: #fff;
   font: inherit;
 }
+
+.size-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid #b8c4c8;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.stepper-btn {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.size-value {
+  min-width: 22px;
+  text-align: center;
+  font-weight: 700;
+}
 .panel {
   background: var(--card);
 }
@@ -95,6 +119,10 @@ body {
 }
 
 .control-row label {
+  font-weight: 700;
+}
+
+.axis-label {
   font-weight: 700;
 }
 
@@ -181,6 +209,7 @@ button:disabled:hover {
   border: 1px solid #bcc9ce;
   background: #faf9f5;
   transition: transform 0.12s ease, box-shadow 0.2s ease;
+  padding: 0;
 }
 
 .cell.cell-pop {
@@ -208,7 +237,7 @@ button:disabled:hover {
 .cell.port {
   background: #e3f5f5;
   border-color: #90c9cc;
-  font-size: 1.15rem;
+  font-size: 1rem;
 }
 
 .cell.mountain {
@@ -301,12 +330,58 @@ button:disabled:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 6px;
   padding-top: 0;
 }
 
 .score-line strong {
   font-size: 1.35rem;
-  margin-left: 6px;
+}
+
+.score-line strong.solved {
+  color: var(--ok);
+}
+
+.timer-label {
+  margin-left: 14px;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 120;
+}
+
+.confetti {
+  position: absolute;
+  top: -24px;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  opacity: 0.95;
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  animation: confetti-fall var(--fall-duration, 2000ms) cubic-bezier(.17,.67,.32,1), confetti-spin 620ms linear infinite;
+}
+
+@keyframes confetti-fall {
+  from {
+    top: -24px;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    top: calc(100vh + 24px);
+    transform: translate3d(var(--x-drift, 0px), 0, 0) rotate(var(--twist, 360deg));
+    opacity: 0.82;
+  }
+}
+
+@keyframes confetti-spin {
+  to {
+    rotate: 360deg;
+  }
 }
 
 .muted {
@@ -362,5 +437,15 @@ button:disabled:hover {
   .score-flyer {
     font-size: 0.78rem;
     padding: 4px 6px;
+  }
+
+  .size-stepper {
+    gap: 5px;
+  }
+
+  .stepper-btn {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 6px 10px;
   }
 }

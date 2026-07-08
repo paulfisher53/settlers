@@ -22,7 +22,14 @@ const state = {
   placements: {},
   randomMap: null,
   randomRows: 5,
-  randomCols: 5
+  randomCols: 5,
+  timer: {
+    elapsedMs: 0,
+    startedAtMs: Date.now(),
+    intervalId: null,
+    running: false
+  },
+  solved: false
 };
 
 //const mapSelect = document.getElementById("map-select");
@@ -30,11 +37,112 @@ const boardEl = document.getElementById("board");
 const resourcePicker = document.getElementById("resource-picker");
 const clearBtn = document.getElementById("clear-btn");
 const rerollBtn = document.getElementById("reroll-btn");
-const randomHInput = document.getElementById("random-h-input");
-const randomWInput = document.getElementById("random-w-input");
+const randomHDecreaseBtn = document.getElementById("random-h-decrease");
+const randomHIncreaseBtn = document.getElementById("random-h-increase");
+const randomWDecreaseBtn = document.getElementById("random-w-decrease");
+const randomWIncreaseBtn = document.getElementById("random-w-increase");
+const randomHValueEl = document.getElementById("random-h-value");
+const randomWValueEl = document.getElementById("random-w-value");
 
 //const finalScoreEl = document.getElementById("final-score");
 const potentialScoreEl = document.getElementById("potential-score");
+const timerEl = document.getElementById("timer");
+
+function formatElapsed(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function currentElapsedMs() {
+  if (!state.timer.running) {
+    return state.timer.elapsedMs;
+  }
+  return state.timer.elapsedMs + (Date.now() - state.timer.startedAtMs);
+}
+
+function syncTimerDisplay() {
+  timerEl.textContent = formatElapsed(currentElapsedMs());
+}
+
+function startTimer() {
+  if (state.timer.running) {
+    return;
+  }
+  state.timer.running = true;
+  state.timer.startedAtMs = Date.now();
+  if (state.timer.intervalId) {
+    clearInterval(state.timer.intervalId);
+  }
+  state.timer.intervalId = setInterval(syncTimerDisplay, 1000);
+  syncTimerDisplay();
+}
+
+function stopTimer() {
+  if (!state.timer.running) {
+    return;
+  }
+  state.timer.elapsedMs = currentElapsedMs();
+  state.timer.running = false;
+  if (state.timer.intervalId) {
+    clearInterval(state.timer.intervalId);
+    state.timer.intervalId = null;
+  }
+  syncTimerDisplay();
+}
+
+function resetTimer() {
+  if (state.timer.intervalId) {
+    clearInterval(state.timer.intervalId);
+    state.timer.intervalId = null;
+  }
+  state.timer.elapsedMs = 0;
+  state.timer.startedAtMs = Date.now();
+  state.timer.running = false;
+  syncTimerDisplay();
+  startTimer();
+}
+
+function fireConfetti() {
+  const layer = document.createElement("div");
+  layer.className = "confetti-layer";
+  document.body.appendChild(layer);
+
+  const colors = ["#f39c12", "#27ae60", "#e74c3c", "#3498db", "#16a085", "#f1c40f"];
+  const pieces = 140;
+  for (let i = 0; i < pieces; i += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti";
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.setProperty("--x-drift", `${Math.round((Math.random() - 0.5) * 220)}px`);
+    piece.style.setProperty("--twist", `${Math.round((Math.random() - 0.5) * 1000)}deg`);
+    piece.style.setProperty("--fall-duration", `${1050 + Math.round(Math.random() * 900)}ms`);
+    piece.style.animationDelay = `${Math.round(Math.random() * 380)}ms`;
+    layer.appendChild(piece);
+  }
+
+  window.setTimeout(() => {
+    layer.remove();
+  }, 2600);
+}
+
+function updateSolvedState(report) {
+  const isSolved = report.valid;
+  potentialScoreEl.classList.toggle("solved", isSolved);
+
+  if (isSolved) {
+    stopTimer();
+    if (!state.solved) {
+      fireConfetti();
+    }
+  } else {
+    startTimer();
+  }
+
+  state.solved = isSolved;
+}
 
 function getActiveMap() {
   if (state.mapId === RANDOM_MAP_ID) {
@@ -303,8 +411,8 @@ function createSolvedFallbackMap(rows, cols) {
 }
 
 function createRandomMap() {
-  const rows = Math.max(4, Math.min(10, Number(state.randomRows) || 5));
-  const cols = Math.max(4, Math.min(10, Number(state.randomCols) || 5));
+  const rows = Math.max(5, Math.min(10, Number(state.randomRows) || 5));
+  const cols = Math.max(5, Math.min(10, Number(state.randomCols) || 5));
   const maxAttempts = 120;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const candidate = createRandomMapCandidate(rows, cols);
@@ -477,23 +585,6 @@ function validateAndScore(map) {
   };
 }
 
-function renderMapSelect() {
-  //mapSelect.innerHTML = "";
-
-  const randomOption = document.createElement("option");
-  randomOption.value = RANDOM_MAP_ID;
-  randomOption.textContent = "Random Map";
-  //mapSelect.appendChild(randomOption);
-
-  // for (const map of MAPS) {
-  //   const option = document.createElement("option");
-  //   option.value = map.id;
-  //   option.textContent = map.name;
-  //   mapSelect.appendChild(option);
-  // }
-  //mapSelect.value = RANDOM_MAP_ID;
-}
-
 function updateRerollButtonState() {
   const isRandom = state.mapId === RANDOM_MAP_ID;
   rerollBtn.disabled = !isRandom;
@@ -501,8 +592,34 @@ function updateRerollButtonState() {
 }
 
 function syncRandomSizeInputs() {
-  randomHInput.value = String(state.randomRows);
-  randomWInput.value = String(state.randomCols);
+  randomHValueEl.textContent = String(state.randomRows);
+  randomWValueEl.textContent = String(state.randomCols);
+}
+
+function updateRandomSize(axis, delta) {
+  const min = 5;
+  const max = 10;
+  if (axis === "rows") {
+    const nextRows = Math.max(min, Math.min(max, state.randomRows + delta));
+    if (nextRows === state.randomRows) {
+      return;
+    }
+    state.randomRows = nextRows;
+  } else {
+    const nextCols = Math.max(min, Math.min(max, state.randomCols + delta));
+    if (nextCols === state.randomCols) {
+      return;
+    }
+    state.randomCols = nextCols;
+  }
+
+  syncRandomSizeInputs();
+  if (state.mapId === RANDOM_MAP_ID) {
+    state.randomMap = createRandomMap();
+    clearPlacements();
+    renderBoard();
+    renderScorePanel();
+  }
 }
 
 function renderResourcePicker() {
@@ -629,6 +746,7 @@ function renderScorePanel(report) {
 
   //finalScoreEl.textContent = String(reportToUse.finalScore);
   potentialScoreEl.textContent = String(reportToUse.potentialScore);
+  updateSolvedState(reportToUse);
 }
 
 function animateScoreFly(sourceRect, points, intensity) {
@@ -670,44 +788,16 @@ function animateScoreFly(sourceRect, points, intensity) {
 
 function clearPlacements() {
   state.placements = {};
+  state.solved = false;
+  resetTimer();
 }
 
 function installEvents() {
-  // mapSelect.addEventListener("change", (event) => {
-  //   state.mapId = event.target.value;
-  //   if (state.mapId === RANDOM_MAP_ID) {
-  //     state.randomMap = createRandomMap();
-  //   }
-  //   clearPlacements();
-  //   syncRandomSizeInputs();
-  //   updateRerollButtonState();
-  //   renderBoard();
-  //   renderScorePanel();
-  // });
 
-  randomHInput.addEventListener("change", () => {
-    const nextValue = Number(randomHInput.value);
-    state.randomRows = Math.max(4, Math.min(10, Number.isFinite(nextValue) ? nextValue : 5));
-    syncRandomSizeInputs();
-    if (state.mapId === RANDOM_MAP_ID) {
-      state.randomMap = createRandomMap();
-      clearPlacements();
-      renderBoard();
-      renderScorePanel();
-    }
-  });
-
-  randomWInput.addEventListener("change", () => {
-    const nextValue = Number(randomWInput.value);
-    state.randomCols = Math.max(4, Math.min(10, Number.isFinite(nextValue) ? nextValue : 5));
-    syncRandomSizeInputs();
-    if (state.mapId === RANDOM_MAP_ID) {
-      state.randomMap = createRandomMap();
-      clearPlacements();
-      renderBoard();
-      renderScorePanel();
-    }
-  });
+  randomHDecreaseBtn.addEventListener("click", () => updateRandomSize("rows", -1));
+  randomHIncreaseBtn.addEventListener("click", () => updateRandomSize("rows", 1));
+  randomWDecreaseBtn.addEventListener("click", () => updateRandomSize("cols", -1));
+  randomWIncreaseBtn.addEventListener("click", () => updateRandomSize("cols", 1));
 
   clearBtn.addEventListener("click", () => {
     clearPlacements();
@@ -727,12 +817,13 @@ function installEvents() {
 }
 
 function init() {
-  //renderMapSelect();
   syncRandomSizeInputs();
+  syncTimerDisplay();
   renderResourcePicker();
   updateRerollButtonState();
   renderBoard();
   renderScorePanel();
+  startTimer();
   installEvents();
 }
 
